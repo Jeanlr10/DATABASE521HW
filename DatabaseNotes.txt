@@ -41,3 +41,34 @@ The Transaction Manager
         Locks or timestamps are used to ensure consistency and isolation for concurrent transactions
         A log is kept to ensure durability in the event of system failure
 
+Recovery
+    Transactions should be durable, but we cannot prevent all sorts of failures:
+        System crashes
+        Power failures
+        Disk crashes
+        User Mistakes
+        Natural Disasters
+    Prevention is better than cure
+        Reliable OS
+        Security
+        UPS and surge protectors
+        Raid Arrays
+    Can't Protect aagainst everything though
+
+The Transaction Log
+    The transaction log records the details of all transactions
+        Any changes the transaction makes to the database
+        How to undo these changes
+        When transactions complete and how
+    The log is stored on the disk, not in memory
+        If the system crashes it is preserved
+    Write ahead log rule
+        The entry in the log must be made before COMMIT processing can complete
+System Failures
+    A system failure means all running transactions are affected
+        software crashes
+        power failure
+    The Physical Media (disks) is not damaged
+    At various times a DBMS takes a checkpoint
+        All committed transactions are written to disk
+        A record is made (on disk) of the transactions that are currently running
