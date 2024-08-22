@@ -1,0 +1,43 @@
+Transactions
+The Setting
+    Database Systems are normally being accessed by many users or processes at the same time
+        Both Queries and modifications
+    Unlike Operating Systems, which support interaction of processes, a DMBS needs to keep processes from troublesome interactions
+
+Example: Bad interaction   
+    You and your spouse each take $100 from different ATMs at about the same time
+        The DBMS better make sure one account deduction doesn't get lost
+    Compare: An OS allows two people to edit a document at the same time. If both write, one's changes are lost
+
+Transactions
+    A transaction is an action, or a series of actions, carried out by a single user or an application program, which reads or updates the contents of a database
+    A transaction is a 'logical unit of work' on a database
+        each transaction does something in the database
+        No part of it alone achieves anything of use or interest
+    Transactions are the unit of recovery, consistency, and integrity as well
+    ACID properties
+        Atomic - Either the whole process is done or none is
+        Consistent - Database constraints are preserved
+        Isolated - It appears to the user as if only one process executes at a time
+        Durable - Effects of a process do not get lost if the system crashes
+
+    Example of Transaction
+        Transfer $50 from account A to account B
+        A = A - 50
+        Write(A)
+        Read(B)
+        B=B+50
+        Write(B)
+
+        Atomicity - Shouldnt take money from A without giving it to B
+        Consistency - Money isn't lost or gained
+        Isolation - Other queries shouldn't see A or B change until completion
+        Durability - the money does not go back to A
+
+The Transaction Manager
+    The transaction manager enforces the ACID properties
+        It schedules the operation of transactions
+        COMMIT and ROLLBACK are used to ensure atomicity
+        Locks or timestamps are used to ensure consistency and isolation for concurrent transactions
+        A log is kept to ensure durability in the event of system failure
+
