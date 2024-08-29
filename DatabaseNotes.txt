@@ -53,7 +53,7 @@ Recovery
         Security
         UPS and surge protectors
         Raid Arrays
-    Can't Protect aagainst everything though
+    Can't Protect against everything though
 
 The Transaction Log
     The transaction log records the details of all transactions
