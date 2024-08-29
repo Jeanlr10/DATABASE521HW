@@ -1,0 +1,22 @@
+Use Java and JDBC to write a program to simulate transfer money from one to another bank account 
+(let user input account numbers and transfer amount). Note: in order to keep the balance of each 
+bank account in a consistent status, use a transaction to process each money transfer (Put two 
+update statements for transfer from and transfer to accounts in one transaction). Assume the 
+bankaccount table exists already.
+
+
+Use the following bankaccount schema.
+
+
+create table bankaccount(accnum int primary key, balance real);
+
+
+
+insert into bankaccount values(111,1000);
+
+
+
+insert into bankaccount values(222,2000);
+
+
+Please submit .java files. (JDBC Oracle example file is attached.)
