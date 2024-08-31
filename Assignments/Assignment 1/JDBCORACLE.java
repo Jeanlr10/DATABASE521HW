@@ -18,7 +18,7 @@ public class JDBCORACLE {
 		}
 		catch(ClassNotFoundException e)
 		{
-			System.out.println("Could not load the driver");
+			System.out.println("Could not load the driver \nError: "+e);
 		}
 		try //connect to oracle and validate the user and passwd
 		{
