@@ -73,10 +73,10 @@ public class JDBCORACLE {
          return "";
       }
    }
-   public static void menu()
+   public static void menu(Connection conn)
    {
-      int debitacct=-1;
-      int creditacct=-1;
+      int decacct=-1;
+      int incacct=-1;
       float amount=-1;
       boolean keepgoing=true;
       boolean ReadyToProcess=false;
@@ -93,7 +93,7 @@ public class JDBCORACLE {
          System.out.println("***  2. Enter Receiving Account Number          ***");
          System.out.println("***  3. Enter Amount to send                    ***");
          System.out.println("***                                             ***");
-         if(creditacct!=-1&&debitacct!=-1&&amount!=-1)
+         if(incacct!=-1&&decacct!=-1&&amount!=-1)
          {
             System.out.println("***  4. Attempt Transaction                     ***");
             ReadyToProcess=true;
@@ -118,13 +118,17 @@ public class JDBCORACLE {
                {
                   try
                   {
-                     debitacct = Integer.parseInt(readEntry("Please enter sending account number: "));
+                     decacct = Integer.parseInt(readEntry("Please enter sending account number: "));
 
                   }
                   catch (ArithmeticException e)
                   {
                      System.out.println("Invalid Input, ");
-                     debitacct=-1;
+                     decacct=-1;
+                  }
+                  if(amount!=-1)
+                  {
+                     retry=false;
                   }
                }
                
@@ -135,13 +139,17 @@ public class JDBCORACLE {
                {
                   try
                   {
-                     creditacct = Integer.parseInt(readEntry("Please enter receiving account number: "));
+                     incacct = Integer.parseInt(readEntry("Please enter receiving account number: "));
 
                   }
                   catch (ArithmeticException e)
                   {
                      System.out.println("Invalid input, ");
-                     creditacct=-1;
+                     incacct=-1;
+                  }
+                  if(amount!=-1)
+                  {
+                     retry=false;
                   }
                }
                
@@ -153,24 +161,83 @@ public class JDBCORACLE {
                   
                   try
                   {
-                     creditacct = Integer.parseInt(readEntry("Please enter amount to be transferred: "));
-
+                     amount = Integer.parseInt(readEntry("Please enter amount to be transferred: "));
                   }
                   catch (ArithmeticException e)
                   {
                      System.out.println("Invalid input, ");
-                     creditacct=-1;
+                     amount=-1;
+                  }
+                  if(amount!=-1)
+                  {
+                     retry=false;
                   }
                }
             case 4:
+               if(ReadyToProcess)
+               {
+                  boolean successfultransfer = false;
+                  try
+                  {
+                     successfultransfer = transfer(decacct,incacct,amount,conn);
+                  }
+                  catch(SQLException e)
+                  {
+                     System.out.println(e);
+                     successfultransfer = false;
+                  }
+                  if(successfultransfer==true)
+                  {
+                     System.out.println("Transfer Successful");
+                  }
+                  else
+                  {
+                     System.out.println("Transfer Failed");
+                  }
+               }
+               else
+               {
+                  System.out.println("Invalid Option, Please enter a valid option");
+               }
             default:
                System.out.println("Invalid Option, Please enter a valid option");
 
          }
       }
    }
-   public static int transfer(int decacct, int incacct, float quantity)
+   public static boolean transfer(int decacct, int incacct, float quantity, Connection conn) throws SQLException
    {
-
+      conn.setAutoCommit(false); // Set autocommit to false in order to ensure multiple updates can be performed in one transaction
+      String decreaseSql = "UPDATE bankaccount SET balance = balance - ? WHERE accnum = ?";
+      String increaseSql = "UPDATE bankaccount SET balance = balance + ? WHERE accnum = ?";
+      try{
+         PreparedStatement decstmt=null;
+         PreparedStatement incstmt=null;
+         decstmt=conn.prepareStatement(decreaseSql);
+         incstmt=conn.prepareStatement(increaseSql);
+         decstmt.setFloat(1, quantity);
+         decstmt.setInt(2, decacct);
+         incstmt.setFloat(1, quantity);
+         incstmt.setInt(2, incacct);
+         int numrowsinc=incstmt.executeUpdate();
+         int numrowsdec=decstmt.executeUpdate();
+         if(numrowsdec>0&&numrowsdec<1&&numrowsinc>0&&numrowsinc<1)
+         {
+            conn.commit();
+            return true;
+         }
+         else
+         {
+            System.out.println("Failed to write the correct number of lines\nRolling back...");
+            conn.rollback();
+            return false;
+         }
+      }
+      catch(SQLException e)
+      {   
+         conn.rollback();
+         e.printStackTrace();
+         return false;
+      }
    }
 }
